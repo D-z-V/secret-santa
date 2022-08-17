@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <title>Home - Secret Santa</title>
+        <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
+    </head>
+    <body>
+        <nav class="navbar navbar-dark navbar-expand-md fixed-top navbar-shrink py-3" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    </span><span>Secret Santa</span>
+                </a>
+                    <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1">
+                        <span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                <div class="collapse navbar-collapse" id="navcol-1">
+                        <ul class="navbar-nav" style="margin-left: 35%;"> Welcome, {{ session['user'] }}</ul>
+                    <ul class="navbar-nav mx-auto"></ul>
+                    <a class="btn btn-primary shadow" role="button" href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <section class="py-5 mt-5">
+            <div class="container py-5" style="padding-top: 1px !important;">
+                <div class="row mb-5">
+                    <div class="col-md-8 col-xl-6 text-center mx-auto">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Join an already existing group</h5>
+                                        <form method="post" class="form-horizontal" style="margin: 1rem !important;">
+                                            <div class="form-group">
+                                                <label for="group_id" style="margin-bottom: 10px !important; " class="text-muted">Invite Code</label>
+                                                {{ join_form.join_code( class="form-control form-control-sm", placeholder="Enter Invite Code", type="text", style="color: #504ae7 !important") }}
+                                            </div>
+                                            {{ join_form.csrf_token }}
+                                            <div class="d-flex justify-content-center align-items-center" style="margin: 1rem !important;">
+                                                <div class="btn-group">
+                                                    {{ join_form.submit( class="btn btn-sm btn-outline-secondary", type="submit", value="Join") }}
+                                                </div>
+                                            </div>
+                                            {% if error %}
+                                            <div class="alert alert-danger" role="alert" style="padding-top: 7px !important; padding-bottom: 7px !important;">
+                                                {{ error }}
+                                            </div>
+                                        {% endif %}
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Create a new Group</h5>
+                                        <form method="post" class="form-horizontal" style="margin: 1rem !important;">
+                                            <p class="text-muted" style="margin-top: 2.7rem !important;">Create a new group and invite your friends to join</p>
+                                            <div class="d-flex justify-content-center align-items-center" style="margin: 1rem !important;">
+                                                <div class="btn-group" style="margin-top: 1.3rem !important;">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#Create">Create</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>   
+                <hr class="my-4">
+                <h3 class="fw-bold"><strong>Your Groups</strong></h3>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 d-sm-flex justify-content-sm-center" style="margin-top: 2rem;">
+                    {% for group in groups %}
+                        <div class="col mb-4">
+                            <a data-bs-toggle="modal" data-bs-target={{ "#" + group.group_name }} style="cursor: pointer !important;">
+                                <div class="bg-dark border rounded border-dark p-4">
+                                    <div class="d-flex"><img class="rounded-circle flex-shrink-0 me-3 fit-cover mt-1" width="50" height="50" src="{{ url_for('static', filename='/images/users/' + group.group_pic) }}">
+                                        <div>
+                                            <p class="fw-bold text-primary mb-0">{{ group.group_name }}</p>
+                                            <p class="text-muted mb-0">{{ group.location }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="modal fade" id={{ group.group_name }} tabindex="-1" role="dialog" aria-labelledby="{{ group.group_name }}" aria-hidden="true" style="color: black !important;">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Exchange Group</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class = "row">
+                                            <div class="col-md-6" style="display:flex !important; justify-content: center !important; align-items: center !important;">
+                                                <img class="rounded-circle flex-shrink-0 me-3 fit-cover mt-1" width="170" height="170" src="{{ url_for('static', filename='/images/users/' + group.group_pic) }}">
+                                            </div>
+                                            <div class="col-6">
+                                                <h5 class="text mb-4" > {{ group.group_name }} </h5>
+                                                <p class="text"> Invite Code : {{ group.join_code }} </p>
+                                                <p class="text"> Location : {{ group.location }} </p>
+                                                <p class="text"> Date : {{ group.date }} </p>
+                                                <p class="text">Budget : {{ group.budget }}</p>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4">
+                                        <div class="members">
+                                            <h5 class="text-primary" style="display:flex !important; justify-content: center !important; align-items: center !important;">Members</h5>
+                                                {% for members in group.group_members %}
+                                                <div class="text" style="display:flex !important; justify-content: center !important; align-items: center !important;">{{ members.full_name }}</div>
+                                                {% endfor %}   
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <div class="modal fade" id="Create" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="color: black !important;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Create Group</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" class="form-horizontal" style="margin: 1rem !important;" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="group_id" style="margin-bottom: 5px !important; " class="text-muted">Group Name</label>
+                                {{ group_form.group_name( class="form-control form-control-sm", placeholder="Enter Group Name", style="margin-bottom: 10px !important; color: #504ae7 !important", type="text") }}
+                            </div>
+                            <div class="form-group">
+                                <label for="budget" style="margin-bottom: 5px !important; " class="text-muted">Budget</label>
+                                {{ group_form.budget( class="form-control form-control-sm", placeholder="Enter Budget", style="margin-bottom: 10px !important; color: #504ae7 !important", type="text") }}
+                            </div>
+                            <div class="form-group">
+                                <label for="location" style="margin-bottom: 5px !important; " class="text-muted">Location</label>
+                                {{ group_form.location( class="form-control form-control-sm", placeholder="Enter Location", style="margin-bottom: 10px !important; color: #504ae7 !important", type="text") }}
+                            </div>
+                            <div class="form-group">
+                                <label for="date" style="margin-bottom: 5px !important; " class="text-muted">Date</label>
+                                {{ group_form.date( class="form-control form-control-sm", placeholder="Enter Date", style="margin-bottom: 10px !important; color: #504ae7 !important", type="date") }}
+                            </div>
+                            <div class="form-group">
+                                <label for="group_pic" style="margin-bottom: 5px !important; " class="text-muted">Group Picture</label>
+                                {{ group_form.group_pic( class="form-control form-control-sm", placeholder="Upload Group Picture", style="margin-bottom: 10px !important; color: #504ae7 !important", type="file") }}
+                            </div>
+                                {{ group_form.csrf_token }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                {{ group_form.submit( class="btn btn-sm btn-primary", type="submit", value="Create") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="../static/js/jquery.min.js"></script>
+        <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="../static/js/bs-init.js"></script>
+        <script src="../static/js/bold-and-dark.js"></script>
+    </body>
+</html>
+
+
+
